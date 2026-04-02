@@ -1,1 +1,3 @@
-# raycast-colima
+# Colima
+
+Check Colima status
