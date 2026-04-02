@@ -17,7 +17,7 @@
     {
       "name": "show-colima-status-menu-bar",
       "title": "Show Colima Status Menu Bar",
-      "description": "",
+      "description": "Show Colima container runtime status in the menu bar",
       "mode": "menu-bar"
     }
   ],
