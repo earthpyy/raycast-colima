@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "mcp__claude_ai_Context7__resolve-library-id",
-      "mcp__claude_ai_Context7__query-docs"
+      "mcp__claude_ai_Context7__query-docs",
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(colima status:*)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }

@@ -14,7 +14,10 @@ declare type Preferences = ExtensionPreferences
 
 declare namespace Preferences {
   /** Preferences accessible in the `show-colima-status-menu-bar` command */
-  export type ShowColimaStatusMenuBar = ExtensionPreferences & {}
+  export type ShowColimaStatusMenuBar = ExtensionPreferences & {
+  /** Colima Path - Path to the colima executable */
+  "colimaPath": string
+}
 }
 
 declare namespace Arguments {

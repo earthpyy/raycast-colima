@@ -15,9 +15,19 @@
   "commands": [
     {
       "name": "show-colima-status-menu-bar",
-      "title": "Show Colima Status Menu Bar",
+      "title": "Colima Status Menu Bar",
       "description": "Show Colima container runtime status in the menu bar",
-      "mode": "menu-bar"
+      "mode": "menu-bar",
+      "preferences": [
+        {
+          "name": "colimaPath",
+          "title": "Colima Path",
+          "description": "Path to the colima executable",
+          "type": "textfield",
+          "required": false,
+          "default": ""
+        }
+      ]
     }
   ],
   "dependencies": {
