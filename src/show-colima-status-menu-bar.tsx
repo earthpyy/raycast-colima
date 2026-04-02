@@ -151,6 +151,7 @@ export default function Command() {
   return (
     <MenuBarExtra
       icon={getIcon(state)}
+      title={state.type === "running" && getPreferenceValues<Preferences.ShowColimaStatusMenuBar>().showMenuBarTitle ? `${state.data.display_name} (${state.data.runtime})` : undefined}
       isLoading={state.type === "loading"}
       tooltip="Colima Status"
       onOpen={refresh}

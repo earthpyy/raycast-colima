@@ -16,7 +16,9 @@ declare namespace Preferences {
   /** Preferences accessible in the `show-colima-status-menu-bar` command */
   export type ShowColimaStatusMenuBar = ExtensionPreferences & {
   /** Colima Path - Path to the colima executable */
-  "colimaPath": string
+  "colimaPath": string,
+  /** Show Title in Menu Bar - Show the profile name and runtime next to the icon in the menu bar */
+  "showMenuBarTitle": boolean
 }
 }
 

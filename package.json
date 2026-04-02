@@ -26,6 +26,15 @@
           "type": "textfield",
           "required": false,
           "default": ""
+        },
+        {
+          "name": "showMenuBarTitle",
+          "title": "Show Title in Menu Bar",
+          "description": "Show the profile name and runtime next to the icon in the menu bar",
+          "type": "checkbox",
+          "required": false,
+          "default": true,
+          "label": "Show Title"
         }
       ]
     }
