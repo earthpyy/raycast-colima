@@ -67,7 +67,7 @@ function getIcon(state: State): MenuBarExtra.Props["icon"] {
     case "stopped":
       return { source: Icon.Circle, tintColor: Color.Red };
     case "not_found":
-      return { source: Icon.Circle, tintColor: Color.Red };
+      return { source: Icon.Circle, tintColor: Color.SecondaryText };
   }
 }
 
@@ -93,9 +93,15 @@ export default function Command() {
       isLoading={state.type === "loading"}
       tooltip="Colima Status"
     >
-      <MenuBarExtra.Item title={`Status: ${getStatusText(state)}`} />
-      {state.type === "running" && (
-        <MenuBarExtra.Item title={`Profile: ${state.data.name}`} />
+      {state.type === "not_found" ? (
+        <MenuBarExtra.Item title="Colima not found" />
+      ) : (
+        <>
+          <MenuBarExtra.Item title={`Status: ${getStatusText(state)}`} />
+          {state.type === "running" && (
+            <MenuBarExtra.Item title={`Profile: ${state.data.name}`} />
+          )}
+        </>
       )}
     </MenuBarExtra>
   );
