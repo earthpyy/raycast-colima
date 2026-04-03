@@ -1,12 +1,10 @@
 import { ActionPanel, Action, Detail, Icon, Color } from "@raycast/api";
-import { useColimaList, runColima, type ColimaListEntry } from "./colima";
-
-function formatBytes(bytes: number): string {
-  const gb = bytes / (1024 * 1024 * 1024);
-  return gb >= 1
-    ? `${gb.toFixed(1)} GB`
-    : `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
-}
+import {
+  useColimaList,
+  runColima,
+  formatBytes,
+  type ColimaListEntry,
+} from "./colima";
 
 function buildMarkdown(entries: ColimaListEntry[] | null): string {
   if (!entries) {
@@ -46,14 +44,13 @@ function buildMarkdown(entries: ColimaListEntry[] | null): string {
 
 export default function Command() {
   const { entries, refresh } = useColimaList();
-  const isLoading = entries === null && true;
 
   const hasRunning = entries?.some((e) => e.status === "Running") ?? false;
   const hasStopped = entries?.some((e) => e.status !== "Running") ?? false;
 
   return (
     <Detail
-      isLoading={entries === undefined}
+      isLoading={entries === null}
       markdown={buildMarkdown(entries)}
       actions={
         <ActionPanel>

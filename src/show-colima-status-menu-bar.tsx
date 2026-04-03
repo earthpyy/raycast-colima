@@ -1,11 +1,6 @@
 import { useCallback } from "react";
-import {
-  Icon,
-  Color,
-  MenuBarExtra,
-  getPreferenceValues,
-} from "@raycast/api";
-import { useColimaStatus, runColima, type State } from "./colima";
+import { Icon, Color, MenuBarExtra, getPreferenceValues } from "@raycast/api";
+import { useColimaStatus, runColima, formatBytes, type State } from "./colima";
 
 function getIcon(state: State): MenuBarExtra.Props["icon"] {
   switch (state.type) {
@@ -31,13 +26,6 @@ function getStatusText(state: State): string {
   }
 }
 
-function formatBytes(bytes: number): string {
-  const gb = bytes / (1024 * 1024 * 1024);
-  return gb >= 1
-    ? `${gb.toFixed(1)} GB`
-    : `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
-}
-
 export default function Command() {
   const { state, refresh } = useColimaStatus();
   const handleAction = useCallback((action: "start" | "stop") => {
@@ -47,7 +35,13 @@ export default function Command() {
   return (
     <MenuBarExtra
       icon={getIcon(state)}
-      title={state.type === "running" && getPreferenceValues<Preferences.ShowColimaStatusMenuBar>().showMenuBarTitle ? `${state.data.display_name} (${state.data.runtime})` : undefined}
+      title={
+        state.type === "running" &&
+        getPreferenceValues<Preferences.ShowColimaStatusMenuBar>()
+          .showMenuBarTitle
+          ? `${state.data.display_name} (${state.data.runtime})`
+          : undefined
+      }
       isLoading={state.type === "loading"}
       tooltip="Colima Status"
       onOpen={refresh}

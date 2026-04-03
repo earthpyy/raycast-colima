@@ -17,8 +17,7 @@ const COMMON_PATHS = [
 ];
 
 export function resolveColimaPath(): string | null {
-  const { colimaPath } =
-    getPreferenceValues<{ colimaPath?: string }>();
+  const { colimaPath } = getPreferenceValues<{ colimaPath?: string }>();
   if (colimaPath) return colimaPath;
 
   try {
@@ -142,6 +141,13 @@ export function useColimaList() {
   }, [fetchList]);
 
   return { entries, refresh: fetchList };
+}
+
+export function formatBytes(bytes: number): string {
+  const gb = bytes / (1024 * 1024 * 1024);
+  return gb >= 1
+    ? `${gb.toFixed(1)} GB`
+    : `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
 }
 
 export function runColima(action: "start" | "stop") {
