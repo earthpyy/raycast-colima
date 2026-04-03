@@ -1,113 +1,20 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useCallback } from "react";
 import {
   Icon,
   Color,
   MenuBarExtra,
   getPreferenceValues,
-  showHUD,
 } from "@raycast/api";
-import { execFile, execFileSync, spawn } from "child_process";
-import { existsSync } from "fs";
-
-const POLL_INTERVAL_MS = 10_000;
-const EXEC_ENV = {
-  ...process.env,
-  PATH: `/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${process.env.PATH ?? ""}`,
-};
-
-const COMMON_PATHS = [
-  "/opt/homebrew/bin/colima",
-  "/usr/local/bin/colima",
-  "/usr/bin/colima",
-  "/home/linuxbrew/.linuxbrew/bin/colima",
-];
-
-function resolveColimaPath(): string | null {
-  const { colimaPath } =
-    getPreferenceValues<Preferences.ShowColimaStatusMenuBar>();
-  if (colimaPath) return colimaPath;
-
-  try {
-    const result = execFileSync("which", ["colima"], {
-      timeout: 2000,
-      env: EXEC_ENV,
-    });
-    const found = result.toString().trim();
-    if (found) return found;
-  } catch {
-    // fall through to common paths
-  }
-
-  return COMMON_PATHS.find((p) => existsSync(p)) ?? null;
-}
-
-interface ColimaStatus {
-  display_name: string;
-  arch: string;
-  runtime: string;
-  cpu: number;
-  memory: number;
-  disk: number;
-}
-
-type State =
-  | { type: "loading" }
-  | { type: "running"; data: ColimaStatus }
-  | { type: "stopped" }
-  | { type: "not_found" };
-
-function useColimaStatus() {
-  const [state, setState] = useState<State>({ type: "loading" });
-  const timerRef = useRef<NodeJS.Timeout>();
-
-  const fetchStatus = useCallback(() => {
-    const colimaPath = resolveColimaPath();
-    if (!colimaPath) {
-      setState({ type: "not_found" });
-      return;
-    }
-    execFile(
-      colimaPath,
-      ["status", "--json"],
-      { timeout: 5000, env: EXEC_ENV },
-      (error, stdout) => {
-        if (error) {
-          if ("code" in error && error.code === "ENOENT") {
-            setState({ type: "not_found" });
-          } else {
-            setState({ type: "stopped" });
-          }
-          return;
-        }
-        try {
-          const data = JSON.parse(stdout) as ColimaStatus;
-          setState({ type: "running", data });
-        } catch {
-          setState({ type: "stopped" });
-        }
-      },
-    );
-  }, []);
-
-  useEffect(() => {
-    fetchStatus();
-    timerRef.current = setInterval(fetchStatus, POLL_INTERVAL_MS);
-    return () => clearInterval(timerRef.current);
-  }, [fetchStatus]);
-
-  return { state, refresh: fetchStatus };
-}
+import { useColimaStatus, runColima, type State } from "./colima";
 
 function getIcon(state: State): MenuBarExtra.Props["icon"] {
   switch (state.type) {
-    case "loading":
-      return { source: Icon.Circle, tintColor: Color.SecondaryText };
     case "running":
-      return { source: Icon.Circle, tintColor: Color.Green };
+      return "colima-running.png";
+    case "loading":
     case "stopped":
-      return { source: Icon.Circle, tintColor: Color.Red };
     case "not_found":
-      return { source: Icon.Circle, tintColor: Color.SecondaryText };
+      return "colima-stopped.png";
   }
 }
 
@@ -133,19 +40,8 @@ function formatBytes(bytes: number): string {
 
 export default function Command() {
   const { state, refresh } = useColimaStatus();
-  const runColima = useCallback((action: "start" | "stop") => {
-    const colimaPath = resolveColimaPath();
-    if (!colimaPath) {
-      showHUD("Colima not found");
-      return;
-    }
-    showHUD(`${action === "start" ? "Starting" : "Stopping"} Colima…`);
-    const child = spawn(colimaPath, [action], {
-      env: EXEC_ENV,
-      detached: true,
-      stdio: "ignore",
-    });
-    child.unref();
+  const handleAction = useCallback((action: "start" | "stop") => {
+    runColima(action);
   }, []);
 
   return (
@@ -202,13 +98,13 @@ export default function Command() {
               <MenuBarExtra.Item
                 icon={Icon.Stop}
                 title="Stop Colima"
-                onAction={() => runColima("stop")}
+                onAction={() => handleAction("stop")}
               />
             ) : state.type === "stopped" ? (
               <MenuBarExtra.Item
                 icon={Icon.Play}
                 title="Start Colima"
-                onAction={() => runColima("start")}
+                onAction={() => handleAction("start")}
               />
             ) : null}
           </MenuBarExtra.Section>
